@@ -1,0 +1,5 @@
+Model,Median Accuracy,Std Accuracy,Median AUC,Std AUC,AUC Ratio vs LR
+Logistic Regression,0.8415,0.026,0.9185,0.026,1.0
+Random Forest,0.9878,0.0144,1.0,0.0018,1.0887
+SVM (RBF),0.9085,0.0243,0.9795,0.0149,1.0664
+Tuned XGBoost,1.0,0.0152,1.0,0.0069,1.0887
