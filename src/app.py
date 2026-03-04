@@ -1,7 +1,7 @@
 # ==========================================================
 # HEART DISEASE PREDICTION — STREAMLIT APP
-# Run: streamlit run app.py
-# Requires: heart.csv in the same directory
+# Run: streamlit run src/app.py
+# Requires: data/heart.csv in the parent directory
 # ==========================================================
 
 import streamlit as st
@@ -12,6 +12,7 @@ import matplotlib.ticker as mticker
 import seaborn as sns
 import shap
 import warnings
+import os
 warnings.filterwarnings("ignore")
 
 from sklearn.model_selection import (train_test_split, StratifiedKFold,
@@ -32,6 +33,12 @@ from imblearn.over_sampling import SMOTE
 from xgboost import XGBClassifier
 from scipy import stats
 import io
+
+# ----------------------------------------------------------
+# SETUP PATHS
+# ----------------------------------------------------------
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
 # ----------------------------------------------------------
 # PAGE CONFIG
@@ -355,10 +362,10 @@ if uploaded:
     df = pd.read_csv(uploaded)
 else:
     try:
-        df = pd.read_csv("heart.csv")
-        st.sidebar.success("Loaded heart.csv from disk")
+        df = pd.read_csv(os.path.join(DATA_DIR, "heart.csv"))
+        st.sidebar.success("Loaded heart.csv from data folder")
     except FileNotFoundError:
-        st.error("**heart.csv not found.** Please upload the file using the sidebar.")
+        st.error("**heart.csv not found in data folder.** Please upload the file using the sidebar.")
         st.stop()
 
 if "target" not in df.columns:

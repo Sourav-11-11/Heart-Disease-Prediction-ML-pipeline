@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import shap
 import warnings
+import os
 warnings.filterwarnings("ignore")
 
 from sklearn.model_selection import (train_test_split, StratifiedKFold,
@@ -28,10 +29,21 @@ from xgboost import XGBClassifier
 from scipy import stats
 
 # ==========================================================
+# SETUP PATHS
+# ==========================================================
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA_DIR = os.path.join(BASE_DIR, "data")
+OUTPUT_DIR = os.path.join(BASE_DIR, "outputs")
+
+# Create outputs directory if it doesn't exist
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# ==========================================================
 # LOAD DATA
 # ==========================================================
 
-df = pd.read_csv("heart.csv")
+df = pd.read_csv(os.path.join(DATA_DIR, "heart.csv"))
 X = df.drop("target", axis=1)
 y = df["target"]
 
@@ -160,7 +172,8 @@ baseline_auc = results_df.loc[
 ].values[0]
 results_df["AUC Ratio vs LR"] = (results_df["Median AUC"] / baseline_auc).round(4)
 
-results_df.to_csv("Table_A_Results.csv", index=False)
+output_path = os.path.join(OUTPUT_DIR, "Table_A_Results.csv")
+results_df.to_csv(output_path, index=False)
 print("=== 10Fold CV Results ===")
 print(results_df.to_string(index=False), "\n")
 
@@ -236,7 +249,7 @@ ConfusionMatrixDisplay.from_predictions(y_ext, y_pred, ax=ax,
                                         colorbar=False, cmap="Blues")
 ax.set_title("Confusion Matrix — External Validation")
 plt.tight_layout()
-plt.savefig("Confusion_Matrix.png", dpi=150)
+plt.savefig(os.path.join(OUTPUT_DIR, "Confusion_Matrix.png"), dpi=150)
 plt.close()
 
 # ==========================================================
@@ -253,7 +266,7 @@ ax.plot([0, 1], [0, 1], "k--", label="Random")
 ax.set_title("ROC Curve — External Validation")
 ax.legend(loc="lower right")
 plt.tight_layout()
-plt.savefig("ROC_Curve.png", dpi=150)
+plt.savefig(os.path.join(OUTPUT_DIR, "ROC_Curve.png"), dpi=150)
 plt.close()
 
 # ==========================================================
@@ -270,7 +283,7 @@ ax.set_ylabel("Fraction of Positives")
 ax.set_title("Calibration Curve — External Validation")
 ax.legend()
 plt.tight_layout()
-plt.savefig("Calibration.png", dpi=150)
+plt.savefig(os.path.join(OUTPUT_DIR, "Calibration.png"), dpi=150)
 plt.close()
 
 # ==========================================================
@@ -300,7 +313,7 @@ ax.set_ylabel("Net Benefit")
 ax.set_title("Decision Curve Analysis")
 ax.legend()
 plt.tight_layout()
-plt.savefig("Decision_Curve.png", dpi=150)
+plt.savefig(os.path.join(OUTPUT_DIR, "Decision_Curve.png"), dpi=150)
 plt.close()
 
 # ==========================================================
@@ -319,7 +332,7 @@ if "sex" in X_ext.columns:
         "n":        [male.sum(), female.sum()],
         "AUC":      [male_auc, female_auc]
     })
-    fairness_df.to_csv("Table_Fairness.csv", index=False)
+    fairness_df.to_csv(os.path.join(OUTPUT_DIR, "Table_Fairness.csv"), index=False)
 else:
     print("Fairness check skipped  'sex' column not found.")
 
@@ -348,7 +361,7 @@ plt.figure()
 shap.plots.beeswarm(shap_values, show=False)
 plt.title("SHAP Beeswarm — Feature Importance")
 plt.tight_layout()
-plt.savefig("SHAP_Beeswarm.png", dpi=150, bbox_inches="tight")
+plt.savefig(os.path.join(OUTPUT_DIR, "SHAP_Beeswarm.png"), dpi=150, bbox_inches="tight")
 plt.close()
 
 # ==========================================================
